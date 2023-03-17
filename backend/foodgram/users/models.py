@@ -34,7 +34,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                        unique=True,
                        verbose_name='Электронная почта')
     username = CharField(max_length=150,
-                         verbose_name='Аватар')
+                         verbose_name='Username')
     first_name = CharField(max_length=150,
                            verbose_name='Имя')
     last_name = CharField(max_length=150,

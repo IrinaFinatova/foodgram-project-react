@@ -1,11 +1,9 @@
-from .views import UserViewSet
-from rest_framework.routers import DefaultRouter
+from .views import UserDetailViewSet
 from django.urls import include, path
 
 
-v1_router = DefaultRouter()
-v1_router.register('users', UserViewSet, basename='users')
 urlpatterns = [
-    path("", include(v1_router.urls)),
-    #path("auth/", include(token)),
+    path('users/<int:pk>/', UserDetailViewSet.as_view()),
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken'))
 ]

@@ -1,40 +1,42 @@
 from django.db.models import BooleanField, CharField, EmailField
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.core.validators import EmailValidator, RegexValidator
 
 
-class CustomUserManager(BaseUserManager):
-    """Создание кастомного BaseUserManager
-     с индентификатором вместо username."""
-    def create_user(self, email, password, **extra_fields):
-        """Создание пользователя с e-mail и password"""
-        if not email:
-            raise ValueError('Email должен быть определен')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save()
-        return user
-
-    def create_superuser(self, email, password, **extra_fields):
-        """
-        Create and save a SuperUser with the given email and password.
-        """
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser должен атрибут is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser должен иметь атрибут is_superuser=True.')
-        return self.create_user(email, password, **extra_fields)
+#class CustomUserManager(BaseUserManager):
+##    """Создание кастомного BaseUserManager
+#     с индентификатором вместо username."""
+#    def create_user(self, email, password, **extra_fields):
+#        """Создание пользователя с e-mail и password"""
+#        if not email:
+#            raise ValueError('Email должен быть определен')
+#        email = self.normalize_email(email)
+#        user = self.model(email=email, **extra_fields)
+#        user.set_password(password)
+#        user.save()
+#       return user
+#
+#    def create_superuser(self, email, password, **extra_fields):
+#        """
+#        Create and save a SuperUser with the given email and password.
+#        """
+#        extra_fields.setdefault('is_staff', True)
+#       extra_fields.setdefault('is_superuser', True)
+#        if extra_fields.get('is_staff') is not True:
+#            raise ValueError('Superuser должен атрибут is_staff=True.')
+#        if extra_fields.get('is_superuser') is not True:
+#            raise ValueError('Superuser должен иметь атрибут is_superuser=True.')
+#       return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = EmailField(max_length=254,
                        unique=True,
-                       verbose_name='Электронная почта')
+                       verbose_name='Электронная почта',
+                       validators=[EmailValidator(message='Неправильный фофрмат адреса электронной почты!')])
     username = CharField(max_length=150,
-                         verbose_name='Username')
+                         verbose_name='Username',
+                         validators=[RegexValidator(regex='^[\w.@+-]+$', message='Неправильный формат username]!')])
     first_name = CharField(max_length=150,
                            verbose_name='Имя')
     last_name = CharField(max_length=150,
@@ -42,13 +44,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     password = CharField(max_length=150,
                          verbose_name='Пароль')
     is_subscribed = BooleanField(default=False,
-                                 verbose_name='Подписан')
-    is_staff = BooleanField(verbose_name='Персонал')
-    is_superuser = BooleanField(verbose_name='superuser')
+                                 verbose_name='Подписка')
+    is_staff = BooleanField(default=False,
+                            verbose_name='Персонал')
+    is_superuser = BooleanField(default=False,
+                                verbose_name='superuser')
 
-    objects = CustomUserManager()
+    objects = UserManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password', 'is_subscribed', 'is_staff', 'is_superuser']
 
 
     class Meta:

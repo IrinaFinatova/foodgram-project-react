@@ -1,7 +1,9 @@
-from rest_framework import serializers
+from djoser.serializers import UserSerializer
 from .models import CustomUser
 
-class UserSerializer(serializers.ModelSerializer):
+
+class CustomUserSerializer(UserSerializer):
     class Meta:
         model = CustomUser
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+        read_only_fields = 'id', 'is_subscribed'

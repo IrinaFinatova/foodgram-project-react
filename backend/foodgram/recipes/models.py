@@ -54,7 +54,7 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngridientRecipe',
+        through='IngredientRecipe',
         verbose_name='Ингридиенты',
         db_index=True,)
     tags = models.ManyToManyField(
@@ -89,7 +89,7 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
-class IngridientRecipe(models.Model):
+class IngredientRecipe(models.Model):
     """Таблица для ManyToMany связи между Ингридиентами и Рецептами"""
 
     ingredient = models.ForeignKey(Ingredient, on_delete=models.SET_NULL, null=True)

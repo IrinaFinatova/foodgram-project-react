@@ -45,11 +45,11 @@ class IngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     tags = TagSerializer(many=True)
-    #image = Base64ImageField(required=False, allow_null=True)
+    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Recipe
-        fields = ('id', 'author', 'tags', 'name', 'text', 'cooking_time')
+        fields = ('id', 'author', 'tags', 'name', 'text', 'image', 'cooking_time')
         read_only_fields = ('author',)
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -57,7 +57,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = SlugRelatedField(
         queryset=Ingredient.objects.all(), slug_field="title", many=True
     )
-#    image = Base64ImageField(required=False, allow_null=True)
+    image = Base64ImageField(required=False, allow_null=True)
     tags = SlugRelatedField(
         queryset=Tag.objects.all(), slug_field='slug', many=True)
 

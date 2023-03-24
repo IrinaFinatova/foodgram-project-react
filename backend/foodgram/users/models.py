@@ -1,7 +1,7 @@
 from django.db.models import BooleanField, CharField, EmailField
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.validators import EmailValidator, RegexValidator
-
+from django.db import models
 
 #class CustomUserManager(BaseUserManager):
 ##    """Создание кастомного BaseUserManager
@@ -62,3 +62,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'{self.last_name} {self.first_name}'
+
+
+class Subscribe(models.Model):
+    following = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_following'
+            )
+        ]

@@ -2,7 +2,7 @@ from django.db.models import BooleanField, CharField, EmailField
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
-
+from django.core.exceptions import ValidationError
 #class CustomUserManager(BaseUserManager):
 ##    """Создание кастомного BaseUserManager
 #     с индентификатором вместо username."""
@@ -33,18 +33,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = EmailField(max_length=254,
                        unique=True,
                        verbose_name='Электронная почта',
-                       validators=[EmailValidator(message='Неправильный фофрмат адреса электронной почты!')])
+                       validators=[EmailValidator(message='Неправильный фофрмат адреса электронной почты!')],
+                       error_messages={'unique':
+                                           ('Пользователь с таким адресом электронной почты уже существует!')})
     username = CharField(max_length=150,
                          verbose_name='Username',
-                         validators=[RegexValidator(regex='^[\w.@+-]+$', message='Неправильный формат username]!')])
+                         validators=[RegexValidator(regex='^[\w.@+-]+$',
+                                                    message='Неправильный формат username]!')])
     first_name = CharField(max_length=150,
                            verbose_name='Имя')
     last_name = CharField(max_length=150,
                           verbose_name='Фамилия')
     password = CharField(max_length=150,
                          verbose_name='Пароль')
-    is_subscribed = BooleanField(default=False,
-                                 verbose_name='Подписка')
     is_staff = BooleanField(default=False,
                             verbose_name='Персонал')
     is_superuser = BooleanField(default=False,
@@ -52,7 +53,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password', 'is_subscribed', 'is_staff', 'is_superuser']
+    REQUIRED_FIELDS = ['username',
+                       'first_name',
+                       'last_name',
+                       'password',
+                       'is_staff',
+                       'is_superuser']
 
 
     class Meta:
@@ -65,21 +71,38 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Subscribe(models.Model):
-    following = models.ForeignKey(
+    user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='following'
+        related_name='subscribing',
+        verbose_name='Подписки'
     )
-    user = models.ForeignKey(
-        User,
+    subscribed = models.ForeignKey(
+        CustomUser,
         on_delete=models.CASCADE,
-        related_name='follower'
+        related_name='subscribed',
+        verbose_name='Подписчик'
     )
 
+    def clean(self):
+        errors = {}
+        if self.user == self.subscribed:
+            errors['user'] = ValidationError('На себя подписаться нельзя!')
+        if errors:
+            raise ValidationError(errors)
+
+
+
     class Meta:
+        verbose_name = ('Подписка')
+        verbose_name_plural = ('Подписки')
+        ordering = ['subscribed']
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'following'],
-                name='unique_user_following'
+                fields=['user', 'subscribed'],
+                name='unique_user_subscribed'
             )
         ]
+
+    def __str__(self):
+        return f'{self.last_name} {self.first_name}'

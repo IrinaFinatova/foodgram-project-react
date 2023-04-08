@@ -1,4 +1,4 @@
-from .views import RecipeViewSet, TagViewSet, IngredientViewSet
+from .views import RecipeViewSet, TagViewSet, IngredientViewSet, FavoriteViewSet, CartViewSet
 from rest_framework.routers import DefaultRouter
 from django.urls import include, path
 from django.conf import settings
@@ -8,8 +8,10 @@ router = DefaultRouter()
 router.register(r"ingredients", IngredientViewSet, basename="ingredients")
 router.register(r"tags", TagViewSet, basename="tags")
 router.register(r"recipes", RecipeViewSet, basename="recipes")
-
-
+router.register(
+    r'recipes/(?P<recipe_id>\d+)/favorite', FavoriteViewSet, basename='favorites')
+router.register(
+    r'recipes/(?P<recipe_id>\d+)/shopping_cart', CartViewSet, basename='cart')
 #router.register(r"tags", TagViewSet, basename="tags")
 #router.register(
 #    r"titles/(?P<title_id>\d+)/reviews", ReviewViewSet, basename="reviews"

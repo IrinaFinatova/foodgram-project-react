@@ -1,14 +1,21 @@
 from django.http import Http404
-
+from rest_framework.generics import ListAPIView
 from rest_framework import viewsets, status
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
-
+from rest_framework import filters
 from .models import Tag, Ingredient, Recipe, Cart, Favorite
-from .serializers import TagSerializer, IngredientSerializer, RecipeReadSerializer, RecipeCreateSerializer, CartSerializer, FavoriteSerializer
+from users.models import Subscribe, CustomUser
+from .serializers import (TagSerializer,
+                          IngredientSerializer,
+                          RecipeReadSerializer,
+                          RecipeCreateSerializer,
+                          CartSerializer,
+                          FavoriteSerializer,
+                          SubscribeReadSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -21,12 +28,13 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name']
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [AllowAny]
-    serializer_class = RecipeReadSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
@@ -88,3 +96,20 @@ class CartViewSet(viewsets.ModelViewSet):
         except Http404:
             pass
         return Response(status=HTTP_204_NO_CONTENT)
+
+
+class SubscribeListViewSet(viewsets.ModelViewSet):
+    serializer_class = SubscribeReadSerializer
+    queryset = CustomUser.objects.all()
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user = Subscribe.objects.filter(subscribed=self.kwargs.get('user_id')).user
+        return user
+    ## """Метод обработки запроса."""
+
+        #user = get_object_or_404(CustomUser, id=self.kwargs.get('user_id'))
+        #return self.request.user.subscribed.all()
+        #return Subscribe.objects.filter(user=self.request.user)
+        #user_id = self.kwargs.get("user_id")
+        #return self.request.user.user.all()

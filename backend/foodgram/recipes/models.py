@@ -88,10 +88,11 @@ class Recipe(models.Model):
         validators=[MinValueValidator(1, message='Время приготовления должно быть больше 0!')],
         verbose_name='Время приготовления')
 
+    created = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ['name', 'author']
+        ordering = ['-created', 'id']
 
     def __str__(self):
         return self.name
@@ -132,7 +133,7 @@ class TagRecipe(models.Model):
     class Meta:
         verbose_name = 'Теги рецепта'
         verbose_name_plural = 'Теги рецепта'
-        ordering = ['tag']
+        ordering = ['recipe']
 
 
 class Favorite(models.Model):

@@ -1,14 +1,10 @@
-
 import base64
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from .models import Recipe, Ingredient, Tag, Favorite, Cart, IngredientRecipe, TagRecipe
 from users.serializers import CustomUserSerializer
-
-
-
+from users.models import CustomUser, Subscribe
 
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
@@ -114,7 +110,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def create_ingredients_tags(self, recipe, ingredients, tags):
         for ingredient in ingredients:
             IngredientRecipe.objects.create(recipe=recipe,
-                                            ingredient=ingredient['id'],
+                                            ingredient_id=ingredient['id'],
                                             amount=ingredient['amount'])
         for tag in tags:
             TagRecipe.objects.create(recipe=recipe, tag=tag)
@@ -143,8 +139,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return RecipeReadSerializer(instance, context={
-            'request': self.context.get('request')
-        }).data
+            'request': self.context.get('request')}).data
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
@@ -163,14 +158,14 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
         validators = [
             UniqueTogetherValidator(
-                queryset=Cart.objects.all(),
+                queryset=Favorite.objects.all(),
                 fields=('user', 'recipe'),
                 message='Вы уже подписаны на этот рецепт!'
             )
         ]
 
     def to_representation(self, instance):
-        return RecipeReadSerializer(instance, context={
+        return RecipeSimpleSerializer(instance, context={
             'request': self.context.get('request')
         }).data
 
@@ -191,3 +186,46 @@ class CartSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return RecipeSimpleSerializer(instance.recipe, context={
             'request': self.context.get('request')}).data
+
+
+class SubscribeReadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+
+        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_is_subscribed(self, obj):
+        return Subscribe.objects.filter(
+            subscribed=self.context.get['request'].user,
+            user=obj).exists()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        recipes = Recipe.obj.all()
+        return RecipeSimpleSerializer(
+            recipes,
+            many=True, context={'request': request}).data
+
+    def get_recipes_count(self, obj):
+        return Recipe.obj.count()
+
+
+class SubscribeSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscribe
+        fields = ('subscribed', 'user')
+        validators = [UniqueTogetherValidator(queryset=Subscribe.objects.all(),
+                                              fields=('user', 'subscribed'),
+                                              message='Вы уже подписаны!')]
+
+        def validate(self, data):
+            if self.context.get('request').user == data['user']:
+                raise serializers.ValidationError(
+                    'На себя нельзя подписываться!')
+            return data
+
+        def to_representation(self, instance):
+            return SubscribeReadSerializer(instance.recipe, context={
+                'request': self.context.get('request')}).data

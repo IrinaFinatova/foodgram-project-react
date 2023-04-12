@@ -5,6 +5,7 @@ from .models import CustomUser, Subscribe
 class UserAdmin(admin.ModelAdmin):
 
     list_display = ['email', 'last_name', 'first_name', 'username', 'show_users']
+    search_fields = ('last_name', 'email')
 
     def show_users(self, obj):
         users_list = []
@@ -14,11 +15,8 @@ class UserAdmin(admin.ModelAdmin):
         return ', '.join(users_list)
     show_users.short_description = 'Подписки'
 
-##   def show_issubscribed(self, obj):
- #       return Subscribe.objects.filter(user=obj).exists()
-#    show_issubscribed.short_description = 'Подписка'
+
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
     list_display = ['subscribed', 'user']
-
 

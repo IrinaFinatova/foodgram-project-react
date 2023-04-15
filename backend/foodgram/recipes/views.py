@@ -1,4 +1,5 @@
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView
 from rest_framework import viewsets, status
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
@@ -6,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
+from .filters import RecipeFilter
 from rest_framework import filters
 from .models import Tag, Ingredient, Recipe, Cart, Favorite
 from users.models import Subscribe, CustomUser
@@ -24,18 +26,21 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['^name']
+    filter_backends = (filters.SearchFilter,)
+    search_fields = {'name': ['istartswith', 'icontains']}
+    #filterset_fields = {'name': ['istartswith', 'icontains']}
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [AllowAny]
     http_method_names = ['get', 'post', 'patch', 'delete']
+    #filter_backends = [DjangoFilterBackend]
+    #filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -98,18 +103,21 @@ class CartViewSet(viewsets.ModelViewSet):
         return Response(status=HTTP_204_NO_CONTENT)
 
 
-class SubscribeListViewSet(viewsets.ModelViewSet):
+class SubscribeViewSet(viewsets.ModelViewSet):
     serializer_class = SubscribeReadSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        user = Subscribe.objects.filter(subscribed=self.kwargs.get('user_id')).user
-        return user
-    ## """Метод обработки запроса."""
+    def perform_create(self, serializer):
+        user = get_object_or_404(CustomUser,
+                                   id=self.kwargs.get('user_id'))
+        serializer.save(subscribes=self.request.user, user=user)
 
-        #user = get_object_or_404(CustomUser, id=self.kwargs.get('user_id'))
-        #return self.request.user.subscribed.all()
-        #return Subscribe.objects.filter(user=self.request.user)
-        #user_id = self.kwargs.get("user_id")
-        #return self.request.user.user.all()
+    def perform_destroy(self, instance):
+        user = get_object_or_404(CustomUser,
+                                   id=self.kwargs.get('user_id'))
+        try:
+            instance.delete(recipe=recipe, user=self.request.user, save=True)
+        except Http404:
+            pass
+        return Response(status=HTTP_204_NO_CONTENT)

@@ -1,11 +1,10 @@
-from .views import RecipeViewSet, TagViewSet, IngredientViewSet, FavoriteViewSet, CartViewSet, SubscribeListViewSet
+from .views import RecipeViewSet, TagViewSet, IngredientViewSet, FavoriteViewSet, CartViewSet
 from rest_framework.routers import DefaultRouter
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
 router = DefaultRouter()
-router.register('users/subscriptions/', SubscribeListViewSet, basename="subscribelist")
 router.register(r"ingredients", IngredientViewSet, basename="ingredients")
 router.register(r"tags", TagViewSet, basename="tags")
 router.register(r"recipes", RecipeViewSet, basename="recipes")

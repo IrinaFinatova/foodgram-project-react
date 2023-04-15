@@ -14,6 +14,7 @@ class IngredientAdmin(admin.ModelAdmin):
     help_search_text = 'Поиск по названию ингредиента'
 
 
+
 class IngredientInline(admin.StackedInline):
     model = IngredientRecipe
     extra = 2

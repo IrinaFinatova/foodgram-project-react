@@ -20,6 +20,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингрeдиент'
         verbose_name_plural = 'Ингрeдиенты'
+        ordering = ['id']
 
 
 class Tag(models.Model):
@@ -44,7 +45,7 @@ class Tag(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ['id']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -92,7 +93,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ['-created', 'id']
+        ordering = ['-created']
 
     def __str__(self):
         return self.name

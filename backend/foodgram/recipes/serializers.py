@@ -145,7 +145,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 class RecipeSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id'
+        fields = ('id',
                   'name',
                   'image',
                   'text',
@@ -165,7 +165,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        return RecipeSimpleSerializer(instance, context={
+        return RecipeSimpleSerializer(instance.recipe, context={
             'request': self.context.get('request')
         }).data
 
@@ -189,29 +189,32 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class SubscribeReadSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CustomUser
 
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        fields = ('email', 'id',
+                  'username', 'first_name',
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
 
-    def get_is_subscribed(self, obj):
-        return Subscribe.objects.filter(
-            subscribed=self.context.get['request'].user,
-            user=obj).exists()
+    def get_is_subscribed(self, author):
+        return Subscribe.objects.filter(subscribed=self.context.get('request').user,
+                                        user=author).exists()
 
-    def get_recipes(self, obj):
+    def get_recipes(self, author):
         request = self.context.get('request')
-        recipes = Recipe.obj.all()
-        return RecipeSimpleSerializer(
-            recipes,
-            many=True, context={'request': request}).data
+        recipes = author.recipes.all()
+        return RecipeSimpleSerializer(recipes, many=True,
+                                      context={'request': request}).data
 
-    def get_recipes_count(self, obj):
-        return Recipe.obj.count()
+    def get_recipes_count(self, author):
+       return author.recipes.count()
 
 
-class SubscribeSerializers(serializers.ModelSerializer):
+class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscribe
@@ -220,12 +223,13 @@ class SubscribeSerializers(serializers.ModelSerializer):
                                               fields=('user', 'subscribed'),
                                               message='Вы уже подписаны!')]
 
-        def validate(self, data):
-            if self.context.get('request').user == data['user']:
-                raise serializers.ValidationError(
-                    'На себя нельзя подписываться!')
-            return data
+    def validate(self, data):
+        if self.context.get('request').user == data['user']:
+            raise serializers.ValidationError(
+                'На себя нельзя подписываться!')
+        return data
 
-        def to_representation(self, instance):
-            return SubscribeReadSerializer(instance.recipe, context={
-                'request': self.context.get('request')}).data
+    def to_representation(self, instance):
+        return SubscribeReadSerializer(
+            instance.user,
+            context={'request': self.context.get('request')}).data

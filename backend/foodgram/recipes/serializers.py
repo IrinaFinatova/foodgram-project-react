@@ -1,20 +1,16 @@
-import base64
-from django.core.files.base import ContentFile
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from .models import Recipe, Ingredient, Tag, Favorite, Cart, IngredientRecipe, TagRecipe
-from users.serializers import CustomUserSerializer
-from users.models import CustomUser, Subscribe
 
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
+from users.models import CustomUser, Subscribe
+from users.serializers import CustomUserSerializer
+
+from .models import (Cart, Favorite, Ingredient, IngredientRecipe, Recipe, Tag,
+                     TagRecipe)
+
 
 class TagSerializer(serializers.ModelSerializer):
+    """ Сериализатор для просмотре тегов"""
 
     class Meta:
         model = Tag
@@ -23,6 +19,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для просмотра ингредиентов"""
 
     class Meta:
         model = Ingredient
@@ -30,14 +27,19 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор ингредиентов для создания рецепта"""
+
     id = serializers.IntegerField()
     amount = serializers.IntegerField()
+
     class Meta:
         model = Ingredient
         fields = ('id', 'amount')
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для отображения ингредиентов в рецепте"""
+
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -50,6 +52,8 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для просмотра рецепта"""
+
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField(read_only=True)
@@ -84,14 +88,19 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания рецепта"""
+
     author = CustomUserSerializer(read_only=True)
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all())
     ingredients = IngredientRecipeCreateSerializer(many=True)
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags', 'ingredients', 'name', 'text', 'image', 'cooking_time')
+        fields = ('author', 'tags',
+                  'ingredients', 'name',
+                  'text', 'image', 'cooking_time')
 
     def validate(self, data):
         if not data['ingredients']:
@@ -108,10 +117,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create_ingredients_tags(self, recipe, ingredients, tags):
-        for ingredient in ingredients:
-            IngredientRecipe.objects.create(recipe=recipe,
-                                            ingredient_id=ingredient['id'],
-                                            amount=ingredient['amount'])
+        ingredients_recipe = [
+            IngredientRecipe(recipe=recipe,
+                             ingredient_id=ingredient['id'],
+                             amount=ingredient['amount'])
+            for ingredient in ingredients]
+        IngredientRecipe.objects.bulk_create(
+            ingredients_recipe)
         for tag in tags:
             TagRecipe.objects.create(recipe=recipe, tag=tag)
 
@@ -143,6 +155,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeSimpleSerializer(serializers.ModelSerializer):
+    """Сериализатор для отображения рецепта в избранном и корзине"""
+
     class Meta:
         model = Recipe
         fields = ('id',
@@ -153,6 +167,7 @@ class RecipeSimpleSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания избранного"""
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')
@@ -171,6 +186,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания корзины"""
 
     class Meta:
         model = Cart
@@ -189,6 +205,8 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class SubscribeReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для чтения подписок"""
+
     is_subscribed = serializers.SerializerMethodField(read_only=True)
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
@@ -201,8 +219,9 @@ class SubscribeReadSerializer(serializers.ModelSerializer):
                   'last_name', 'is_subscribed', 'recipes', 'recipes_count')
 
     def get_is_subscribed(self, author):
-        return Subscribe.objects.filter(subscribed=self.context.get('request').user,
-                                        user=author).exists()
+        return Subscribe.objects.filter(
+            subscribed=self.context.get('request').user,
+            user=author).exists()
 
     def get_recipes(self, author):
         request = self.context.get('request')
@@ -211,10 +230,11 @@ class SubscribeReadSerializer(serializers.ModelSerializer):
                                       context={'request': request}).data
 
     def get_recipes_count(self, author):
-       return author.recipes.count()
+        return author.recipes.count()
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания подписок"""
 
     class Meta:
         model = Subscribe

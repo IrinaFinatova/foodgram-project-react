@@ -1,4 +1,5 @@
-from django_filters import BooleanFilter, FilterSet, CharFilter, ModelMultipleChoiceFilter
+from django_filters import (BooleanFilter, CharFilter, FilterSet,
+                            ModelMultipleChoiceFilter)
 
 from .models import Recipe, Tag
 
@@ -6,11 +7,16 @@ from .models import Recipe, Tag
 class RecipeFilter(FilterSet):
     """Фильтр по recipe-фильтрация по автору, тегам, в избранном, в корзинке"""
     author = CharFilter(label='Автор рецепта')
-    tags = ModelMultipleChoiceFilter(name='tags__name', lookup_type='iexact',
-                                     queryset=Tag.objects.all(), label='Теги')
-    is_favorited = BooleanFilter(method='get_is_favorited', label='В избранном')
-    is_in_shopping_cart = BooleanFilter(method='get_is_in_shopping_cart', label='В корзинке')
-
+    tags = ModelMultipleChoiceFilter(
+        name='tags__name', lookup_type='iexact',
+        queryset=Tag.objects.all(),
+        label='Теги')
+    is_favorited = BooleanFilter(
+        method='get_is_favorited',
+        label='В избранном')
+    is_in_shopping_cart = BooleanFilter(
+        method='get_is_in_shopping_cart',
+        label='В корзинке')
 
     class Meta:
         model = Recipe

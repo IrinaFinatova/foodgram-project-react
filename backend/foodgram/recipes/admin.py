@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Tag, Ingredient, Recipe, IngredientRecipe, TagRecipe, Cart, Favorite
+
+from .models import (Cart, Favorite, Ingredient, IngredientRecipe, Recipe, Tag,
+                     TagRecipe)
 
 
 @admin.register(Tag)
@@ -12,7 +14,6 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ['name', 'measurement_unit']
     search_fields = ['name']
     help_search_text = 'Поиск по названию ингредиента'
-
 
 
 class IngredientInline(admin.StackedInline):
@@ -29,9 +30,13 @@ class TagInline(admin.StackedInline):
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [TagInline, IngredientInline]
     list_filter = ('tags', 'name', 'author')
-    list_display = ['id', 'author', 'name', 'show_tags', 'show_ingredients', 'show_favorite']
-    search_fields = ('author__last_name', 'author__email', 'name')
-    help_search_fields = 'Поиск по фамилии или почте автора, названию рецепта.'
+    list_display = ['id', 'author',
+                    'name', 'show_tags',
+                    'show_ingredients', 'show_favorite']
+    search_fields = ('author__last_name',
+                     'author__email', 'name')
+    help_search_fields = ('Поиск по фамилии или почте '
+                          'автора, названию рецепта.')
     date_hierarchy = 'created'
 
     def show_ingredients(self, obj):
@@ -56,6 +61,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ['recipe', 'user']
+
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):

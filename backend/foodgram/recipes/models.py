@@ -1,5 +1,8 @@
+from django.core.validators import (MinValueValidator,
+                                    validate_image_file_extension,
+                                    validate_slug)
 from django.db import models
-from django.core.validators import validate_slug, validate_image_file_extension, MinValueValidator
+
 from users.models import CustomUser
 
 
@@ -33,7 +36,9 @@ class Tag(models.Model):
     slug = models.SlugField(unique=True,
                             validators=[validate_slug],
                             max_length=50,
-                            error_messages={'unique': 'Тег с таким слагом уже существует!'},
+                            error_messages={
+                                'unique':
+                                    'Тег с таким слагом уже существует!'},
                             verbose_name='Слаг тега')
     constraints = [
         models.UniqueConstraint(
@@ -86,10 +91,15 @@ class Recipe(models.Model):
         verbose_name='Описание')
 
     cooking_time = models.PositiveIntegerField(
-        validators=[MinValueValidator(1, message='Время приготовления должно быть больше 0!')],
+        validators=[
+            MinValueValidator(1,
+                              message=(
+                                  'Время приготовления'
+                                  ' должно быть больше 0!'))],
         verbose_name='Время приготовления')
 
     created = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -110,8 +120,10 @@ class IngredientRecipe(models.Model):
                                on_delete=models.CASCADE,
                                verbose_name='Рецепт')
     amount = models.PositiveIntegerField(
-        validators=[MinValueValidator(1,
-                                      message='Количество должно быть больше 0!')],
+        validators=[
+            MinValueValidator(1,
+                              message=(
+                                  'Количество должно быть больше 0!'))],
         verbose_name='Количество ингредиентов')
 
     class Meta:

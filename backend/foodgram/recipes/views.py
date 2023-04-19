@@ -49,11 +49,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeReadSerializer
         return RecipeCreateSerializer
 
-#    def get_serializer_context(self):
-#        context = super().get_serializer_context()
-#        context.update({'request': self.request})
-#        return context
-
     @action(detail=True, methods=['POST', 'DELETE'],
             permission_classes=(AllowAny,))
     def shopping_cart(self, request, pk):
@@ -65,7 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             serializer = CartSerializer(data=data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(raise_exception=True)
                 return Response(
                     serializer.data, status=status.HTTP_201_CREATED)
             return Response(
@@ -83,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 'user': request.user.id}
         if request.method == 'POST':
             serializer = FavoriteSerializer(data=data)
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(
                     serializer.data, status=status.HTTP_201_CREATED)

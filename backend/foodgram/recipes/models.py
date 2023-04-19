@@ -1,4 +1,4 @@
-from django.core.validators import (MinValueValidator,
+from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     validate_image_file_extension,
                                     validate_slug)
 from django.db import models
@@ -17,13 +17,13 @@ class Ingredient(models.Model):
         max_length=200,
         verbose_name='Единица измерения ингредиента')
 
-    def __str__(self):
-        return f'{self.name}'
-
     class Meta:
         verbose_name = 'Ингрeдиент'
         verbose_name_plural = 'Ингрeдиенты'
         ordering = ['id']
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Tag(models.Model):
@@ -46,13 +46,13 @@ class Tag(models.Model):
         )
     ]
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ['id']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -95,7 +95,10 @@ class Recipe(models.Model):
             MinValueValidator(1,
                               message=(
                                   'Время приготовления'
-                                  ' должно быть больше 0!'))],
+                                  ' должно быть больше 0!')),
+            MaxValueValidator(1000,
+                              message=('Время приготовления '
+                                       'не должно быть больше 500!'))],
         verbose_name='Время приготовления')
 
     created = models.DateTimeField(auto_now_add=True)
@@ -123,13 +126,20 @@ class IngredientRecipe(models.Model):
         validators=[
             MinValueValidator(1,
                               message=(
-                                  'Количество должно быть больше 0!'))],
+                                  'Количество должно быть больше 0!')),
+            MaxValueValidator(1,
+                              message=(
+                                  'Количество должно быть не больше 2000!'))
+        ],
         verbose_name='Количество ингредиентов')
 
     class Meta:
         verbose_name = 'Ингредиенты рецепта'
         verbose_name_plural = 'Ингредиенты рецепта'
         ordering = ['ingredient', 'amount']
+
+    def __str__(self):
+        return f'{self.recipe.name} {self.ingredient.name}'
 
 
 class TagRecipe(models.Model):
@@ -147,6 +157,9 @@ class TagRecipe(models.Model):
         verbose_name = 'Теги рецепта'
         verbose_name_plural = 'Теги рецепта'
         ordering = ['recipe']
+
+    def __str__(self):
+        return f'{self.recipe.name} {self.tag.name}'
 
 
 class Favorite(models.Model):
@@ -167,6 +180,9 @@ class Favorite(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'recipe'], name='unique_recipe_favorite')]
 
+    def __str__(self):
+        return f'{self.user.last_name} {self.recipe.name}'
+
 
 class Cart(models.Model):
     user = models.ForeignKey(CustomUser,
@@ -185,3 +201,6 @@ class Cart(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'], name='unique_recipe_cart')]
+
+    def __str__(self):
+        return f'{self.user.last_name} {self.recipe.name}'

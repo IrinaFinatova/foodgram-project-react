@@ -84,3 +84,6 @@ class Subscribe(models.Model):
                 name='unique_user_subscribed'
             )
         ]
+
+    def __str__(self):
+        return f'{self.subscribed.last_name} {self.user.last_name}'

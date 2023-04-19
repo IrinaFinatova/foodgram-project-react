@@ -19,11 +19,13 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientInline(admin.StackedInline):
     model = IngredientRecipe
     extra = 2
+    min_num = 1
 
 
 class TagInline(admin.StackedInline):
     model = TagRecipe
     extra = 2
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -60,9 +62,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['recipe', 'user']
+    list_display = ['user', 'recipe']
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ['recipe', 'user']
+    list_display = ['user', 'recipe']

@@ -36,7 +36,7 @@ def subscribe(request, pk):
     if request.method == 'POST':
         serializer = SubscribeSerializer(
             data=data, context={'request': request})
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors)

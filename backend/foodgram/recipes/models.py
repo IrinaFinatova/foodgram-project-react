@@ -6,6 +6,14 @@ from django.db import models
 from users.models import CustomUser
 
 
+PARAMETRS_OF_RECIPES = {
+'MIN_COOKING_TIME': 1,
+'MAX_COOKING_TIME': 500,
+'MIN_AMOUNT_INGREDIENTS': 1,
+'MAX_AMOUNT_INGREDIENTS': 2000
+}
+
+
 class Ingredient(models.Model):
     """Класс моделей ингредиентов"""
     name = models.CharField(
@@ -92,11 +100,11 @@ class Recipe(models.Model):
 
     cooking_time = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(1,
+            MinValueValidator(PARAMETRS_OF_RECIPES['MIN_COOKING_TIME'],
                               message=(
                                   'Время приготовления'
                                   ' должно быть больше 0!')),
-            MaxValueValidator(1000,
+            MaxValueValidator(PARAMETRS_OF_RECIPES['MAX_COOKING_TIME'],
                               message=('Время приготовления '
                                        'не должно быть больше 500!'))],
         verbose_name='Время приготовления')
@@ -124,10 +132,10 @@ class IngredientRecipe(models.Model):
                                verbose_name='Рецепт')
     amount = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(1,
+            MinValueValidator(PARAMETRS_OF_RECIPES['MIN_AMOUNT_INGREDIENTS'],
                               message=(
                                   'Количество должно быть больше 0!')),
-            MaxValueValidator(1,
+            MaxValueValidator('MAX_AMOUNT_INGREDIENTS',
                               message=(
                                   'Количество должно быть не больше 2000!'))
         ],

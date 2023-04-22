@@ -1,17 +1,11 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from users.models import CustomUser, Subscribe
 from users.serializers import CustomUserSerializer
 
-from .models import (Cart,
-                     Favorite,
-                     Ingredient,
-                     IngredientRecipe,
-                     PARAMETRS_OF_RECIPE,
-                     Recipe, Tag,
-                     TagRecipe)
+from .models import (PARAMETRS_OF_RECIPE, Cart, Favorite, Ingredient,
+                     IngredientRecipe, Recipe, Tag, TagRecipe)
 
 
 class TagSerializer(serializers.ModelSerializer):

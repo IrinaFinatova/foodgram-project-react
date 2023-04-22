@@ -20,10 +20,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = CharField(
         max_length=150,
         verbose_name='Username',
-        validators=[
-                    RegexValidator(
-                        regex='^[\w.@+-]+$',
-                        message='Неправильный формат username]!')])
+        validators=[RegexValidator(regex='^[\w.@+-]+$',
+                    message='Неправильный формат username]!')])
     first_name = CharField(max_length=150,
                            verbose_name='Имя')
     last_name = CharField(max_length=150,

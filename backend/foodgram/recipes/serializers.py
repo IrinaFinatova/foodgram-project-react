@@ -5,7 +5,12 @@ from rest_framework.validators import UniqueTogetherValidator
 from users.models import CustomUser, Subscribe
 from users.serializers import CustomUserSerializer
 
-from .models import (Cart, Favorite, Ingredient, IngredientRecipe, PARAMETRS_OF_RECIPES, Recipe, Tag,
+from .models import (Cart,
+                     Favorite,
+                     Ingredient,
+                     IngredientRecipe,
+                     PARAMETRS_OF_RECIPE,
+                     Recipe, Tag,
                      TagRecipe)
 
 
@@ -106,16 +111,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if not data['ingredients']:
             raise serializers.ValidationError('Из чего готовить будем?')
         for ingredient in data['ingredients']:
-            if ingredient['amount'] < PARAMETRS_OF_RECIPES['MIN_AMOUNT_INGREDIENTS']:
+            if ingredient['amount'] < PARAMETRS_OF_RECIPE['MIN_AMOUNT_INGRED']:
                 raise serializers.ValidationError(
                     'Количество ингредиента не может быть равным 0!')
-            if ingredient['amount'] > PARAMETRS_OF_RECIPES['MAX_AMOUNT_INGREDIENTS']:
+            if ingredient['amount'] > PARAMETRS_OF_RECIPE['MAX_AMOUNT_INGRED']:
                 raise serializers.ValidationError(
                     'Количество ингредиента не может быть больше 2000!')
-        if data['cooking_time'] < PARAMETRS_OF_RECIPES['MIN_COOKING_TIME']:
+        if data['cooking_time'] < PARAMETRS_OF_RECIPE['MIN_COOKING_TIME']:
             raise serializers.ValidationError(
                 'Время приготовления не может быть равным 0!')
-        if data['cooking_time'] > PARAMETRS_OF_RECIPES['MAX_COOKING_TIME']:
+        if data['cooking_time'] > PARAMETRS_OF_RECIPE['MAX_COOKING_TIME']:
             raise serializers.ValidationError(
                 'Время приготовления не может быть больше 500!')
         if not data['tags']:

@@ -6,12 +6,10 @@ from django.db import models
 from users.models import CustomUser
 
 
-PARAMETRS_OF_RECIPES = {
-'MIN_COOKING_TIME': 1,
-'MAX_COOKING_TIME': 500,
-'MIN_AMOUNT_INGREDIENTS': 1,
-'MAX_AMOUNT_INGREDIENTS': 2000
-}
+PARAMETRS_OF_RECIPE = {'MIN_COOKING_TIME': 1,
+                       'MAX_COOKING_TIME': 500,
+                       'MIN_AMOUNT_INGRED': 1,
+                       'MAX_AMOUNT_INGRED': 2000}
 
 
 class Ingredient(models.Model):
@@ -77,7 +75,7 @@ class Recipe(models.Model):
         through='IngredientRecipe',
         related_name='recipes',
         verbose_name='Ингрeдиенты'
-        )
+    )
     tags = models.ManyToManyField(
         Tag,
         through="TagRecipe",
@@ -100,11 +98,11 @@ class Recipe(models.Model):
 
     cooking_time = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(PARAMETRS_OF_RECIPES['MIN_COOKING_TIME'],
+            MinValueValidator(PARAMETRS_OF_RECIPE['MIN_COOKING_TIME'],
                               message=(
                                   'Время приготовления'
                                   ' должно быть больше 0!')),
-            MaxValueValidator(PARAMETRS_OF_RECIPES['MAX_COOKING_TIME'],
+            MaxValueValidator(PARAMETRS_OF_RECIPE['MAX_COOKING_TIME'],
                               message=('Время приготовления '
                                        'не должно быть больше 500!'))],
         verbose_name='Время приготовления')
@@ -132,10 +130,10 @@ class IngredientRecipe(models.Model):
                                verbose_name='Рецепт')
     amount = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(PARAMETRS_OF_RECIPES['MIN_AMOUNT_INGREDIENTS'],
+            MinValueValidator(PARAMETRS_OF_RECIPE['MIN_AMOUNT_INGRED'],
                               message=(
                                   'Количество должно быть больше 0!')),
-            MaxValueValidator('MAX_AMOUNT_INGREDIENTS',
+            MaxValueValidator(PARAMETRS_OF_RECIPE['MAX_AMOUNT_INGRED'],
                               message=(
                                   'Количество должно быть не больше 2000!'))
         ],

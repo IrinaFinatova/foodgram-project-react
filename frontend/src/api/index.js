@@ -33,7 +33,7 @@ class Api {
 
   signin ({ email, password }) {
     return fetch(
-      this._url + '/api/auth/token/login/',
+      '/api/auth/token/login/',
       {
         method: 'POST',
         headers: this._headers,
@@ -47,7 +47,7 @@ class Api {
   signout () {
     const token = localStorage.getItem('token')
     return fetch(
-      this._url + '/api/auth/token/logout/',
+      '/api/auth/token/logout/',
       {
         method: 'POST',
         headers: {
@@ -60,7 +60,7 @@ class Api {
 
   signup ({ email, password, username, first_name, last_name }) {
     return fetch(
-      this._url + `/api/users/`,
+      `/api/users/`,
       {
         method: 'POST',
         headers: this._headers,

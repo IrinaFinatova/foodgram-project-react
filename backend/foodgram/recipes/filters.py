@@ -8,7 +8,7 @@ class RecipeFilter(FilterSet):
     """Фильтр по recipe-фильтрация по автору, тегам, в избранном, в корзинке"""
     author = CharFilter(label='Автор рецепта')
     tags = ModelMultipleChoiceFilter(
-        name='tags__name', lookup_type='iexact',
+        name='tags__slug', lookup_type='iexact',
         queryset=Tag.objects.all(),
         label='Теги')
     is_favorited = BooleanFilter(

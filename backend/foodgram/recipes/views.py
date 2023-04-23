@@ -2,7 +2,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -19,7 +19,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class = None
 
 
@@ -28,7 +28,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = (filters.SearchFilter,)
     search_fields = {'name': ['istartswith', 'icontains']}
     pagination_class = None
@@ -50,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeCreateSerializer
 
     @action(detail=True, methods=['POST', 'DELETE'],
-            permission_classes=(AllowAny,))
+            permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         """Добавление рецепта в корзину
         для покупки ингридиентов"""
@@ -69,7 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['POST', 'DELETE'],
-            permission_classes=(AllowAny,))
+            permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk):
         """Добавление рецепта в избранное
          и его удаление из избранного."""
@@ -88,6 +88,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@permission_classes(IsAuthenticated,)
 @api_view(['GET'])
 def download_shopping_cart(request):
     """Скачивание списка  ингридиентов(название и количество)

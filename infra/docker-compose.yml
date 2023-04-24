@@ -7,17 +7,17 @@ services:
     env_file:
       - ./.env
   frontend:
-    image: irinafinatov/foodgram_front:v1
+    image: irinafinat/foodgram_front:v1
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
   backend:
-    image: irinafinatov/foodgram_back:v1
+    image: irinafinat/foodgram_back:v1
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - ../static/:/app/static/
+      - ../media/:/app/media/
     depends_on:
       - db
     env_file:
@@ -30,8 +30,8 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
+      - ../static/:/var/html/static/
+      - ../media/:/var/html/media/
     depends_on:
       - backend
       - frontend

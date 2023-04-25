@@ -28,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", default='p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs')
 
 # SECURITY WARNING: don't run with debug turned on in production!bn/..,.,
+
 DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '51.250.78.9']
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'django_filters',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -95,11 +97,11 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', default='5432')
     }
 }
-# DATABASES = {
+#DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
+#   }
 # }
 
 

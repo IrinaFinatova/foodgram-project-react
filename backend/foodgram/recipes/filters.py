@@ -1,4 +1,4 @@
-from django_filters import (BooleanFilter, CharFilter, FilterSet,
+from django_filters import (NumberFilter, CharFilter, FilterSet,
                             ModelMultipleChoiceFilter)
 
 from .models import Recipe, Tag
@@ -8,13 +8,13 @@ class RecipeFilter(FilterSet):
     """Фильтр по recipe-фильтрация по автору, тегам, в избранном, в корзинке"""
     author = CharFilter(label='Автор рецепта')
     tags = ModelMultipleChoiceFilter(
-        name='tags__slug', lookup_type='iexact',
+        field_name='tags__slug',
         queryset=Tag.objects.all(),
         label='Теги')
-    is_favorited = BooleanFilter(
+    is_favorited = NumberFilter(
         method='get_is_favorited',
         label='В избранном')
-    is_in_shopping_cart = BooleanFilter(
+    is_in_shopping_cart = NumberFilter(
         method='get_is_in_shopping_cart',
         label='В корзинке')
 

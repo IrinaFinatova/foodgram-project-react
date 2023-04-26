@@ -6,17 +6,18 @@ from .models import Recipe, Tag
 
 class RecipeFilter(FilterSet):
     """Фильтр по recipe-фильтрация по автору, тегам, в избранном, в корзинке"""
-    author = CharFilter(label='Автор рецепта')
+    author = NumberFilter(field_name='author__id')
     tags = ModelMultipleChoiceFilter(
         field_name='tags__slug',
-        queryset=Tag.objects.all(),
-        label='Теги')
+        to_field_name='slug',
+        queryset=Tag.objects.all())
+
     is_favorited = NumberFilter(
         method='get_is_favorited',
         label='В избранном')
+
     is_in_shopping_cart = NumberFilter(
-        method='get_is_in_shopping_cart',
-        label='В корзинке')
+        method='get_is_in_shopping_cart')
 
     class Meta:
         model = Recipe

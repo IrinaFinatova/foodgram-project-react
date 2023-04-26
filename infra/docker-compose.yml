@@ -7,13 +7,13 @@ services:
     env_file:
       - ./.env
   frontend:
-    image: irinafinat/foodgram_front:v1
+    image: irinafin/foodgram_front:v1
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
   backend:
-    image: irinafinat/foodgram_back:v1
+    image: irinafin/foodgram_back:v1
     restart: always
     volumes:
       - static_value/:/app/static/

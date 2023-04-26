@@ -89,7 +89,6 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
@@ -97,9 +96,10 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', default='5432')
     }
 }
+
 # DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
+#       'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #   }
 # }
@@ -161,7 +161,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
-    'PAGE_QUERY_PARAM': 'recipes_limit'
+    'PAGE_SIZE_QUERY_PARAM': 'limit'
 
 }
 DJOSER = {'USER_ID_FIELD': 'email',

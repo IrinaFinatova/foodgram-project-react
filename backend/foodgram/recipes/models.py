@@ -2,7 +2,6 @@ from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     validate_image_file_extension,
                                     validate_slug)
 from django.db import models
-
 from users.models import CustomUser
 
 PARAMETRS_OF_RECIPE = {'MIN_COOKING_TIME': 1,

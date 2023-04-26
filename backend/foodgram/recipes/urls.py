@@ -17,5 +17,4 @@ urlpatterns = [
         name='download_shopping_cart'
     ),
     path('', include(router.urls)),
-
 ]

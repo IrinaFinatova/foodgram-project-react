@@ -3,11 +3,10 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientFilter
 from .models import Cart, Favorite, Ingredient, IngredientRecipe, Recipe, Tag
 from .permissions import IsOwnerOrIsStaffPermission
 from .serializers import (CartSerializer, FavoriteSerializer,
@@ -30,8 +29,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter]
-    search_fields = ['^name']
+    filter_backends = [IngredientFilter]
+    search_fields = ('^name',)
     pagination_class = None
 
 

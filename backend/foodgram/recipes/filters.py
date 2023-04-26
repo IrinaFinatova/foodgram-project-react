@@ -1,4 +1,7 @@
-from django_filters import FilterSet, ModelMultipleChoiceFilter, NumberFilter
+from django_filters import (FilterSet,
+                            ModelMultipleChoiceFilter,
+                            NumberFilter)
+from rest_framework.filters import SearchFilter
 
 from .models import Recipe, Tag
 
@@ -31,3 +34,8 @@ class RecipeFilter(FilterSet):
         if value:
             return queryset.filter(cart__user=self.request.user)
         return queryset
+
+
+class IngredientFilter(SearchFilter):
+    """Фильтр для игредиентов с поиском по названию."""
+    search_param = 'name'

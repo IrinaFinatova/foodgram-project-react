@@ -1,10 +1,11 @@
-from recipes.serializers import SubscribeReadSerializer, SubscribeSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.serializers import SubscribeReadSerializer, SubscribeSerializer
 
 from .models import CustomUser, Subscribe
 from .serializers import CustomUserSerializer

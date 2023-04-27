@@ -13,5 +13,3 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('users/subscription/', SubscribeViewList.as_view())
     ]
-router_v1 = DefaultRouter()
-router_v1.register('', UserDetail, basename='users')

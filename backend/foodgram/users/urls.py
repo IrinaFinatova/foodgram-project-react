@@ -12,4 +12,4 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path('users/subscription/', SubscribeViewList.as_view())
-    ]
+]

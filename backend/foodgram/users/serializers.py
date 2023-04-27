@@ -16,5 +16,5 @@ class CustomUserSerializer(UserSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         return Subscribe.objects.filter(
-                subscribed=request.user.id,
-                user=obj.id).exists() if request else False
+                                subscribed=request.user.id,
+                                user=obj.id).exists() if request else False

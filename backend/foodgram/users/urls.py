@@ -1,11 +1,17 @@
 from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from .views import SubscribeViewList, UserDetail, subscribe
+from .views import SubscribeViewList, UserDetail
+
+
+router_v1 = DefaultRouter()
+router_v1.register('', UserDetail, basename='users')
 
 urlpatterns = [
+    path('users/', include(router_v1.urls)),
+    path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-    path('', include('djoser.urls')),
-    path('users/subscription/', SubscribeViewList.as_view()),
-    path('users/<int:pk>/subscribe/', subscribe),
-    path(r'users/<int:pk>/', UserDetail.as_view())
-]
+    path('users/subscription/', SubscribeViewList.as_view())
+    ]
+router_v1 = DefaultRouter()
+router_v1.register('', UserDetail, basename='users')

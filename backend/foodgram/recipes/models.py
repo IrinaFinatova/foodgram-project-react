@@ -3,7 +3,7 @@ from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     validate_slug)
 from django.db import models
 
-from users.models import CustomUser
+from users.models import CustomUser as User
 
 PARAMETRS_OF_RECIPE = {'MIN_COOKING_TIME': 1,
                        'MAX_COOKING_TIME': 500,
@@ -63,7 +63,7 @@ class Tag(models.Model):
 class Recipe(models.Model):
     """Класс моделей рецептов"""
     author = models.ForeignKey(
-        CustomUser,
+        User,
         null=True,
         on_delete=models.CASCADE,
         related_name='recipes',
@@ -168,7 +168,7 @@ class TagRecipe(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(CustomUser,
+    user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              related_name='favorite',
                              verbose_name='Пользователь')
@@ -190,7 +190,7 @@ class Favorite(models.Model):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(CustomUser,
+    user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              related_name='cart',
                              verbose_name='Пользователь')

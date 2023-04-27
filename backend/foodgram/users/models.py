@@ -1,12 +1,11 @@
-from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin,
-                                        UserManager)
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
-from django.db.models import BooleanField, CharField, EmailField
+from django.db.models import CharField, EmailField
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractUser):
     email = EmailField(
         max_length=254,
         unique=True,
@@ -26,21 +25,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                            verbose_name='Имя')
     last_name = CharField(max_length=150,
                           verbose_name='Фамилия')
-    password = CharField(max_length=150,
-                         verbose_name='Пароль')
-    is_staff = BooleanField(default=False,
-                            verbose_name='Персонал')
-    is_superuser = BooleanField(default=False,
-                                verbose_name='superuser')
 
-    objects = UserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username',
                        'first_name',
                        'last_name',
-                       'password',
-                       'is_staff',
-                       'is_superuser']
+                       'password']
 
     class Meta:
         verbose_name = ('Пользователь')

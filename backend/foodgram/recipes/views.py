@@ -6,7 +6,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter, IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .models import Cart, Favorite, Ingredient, IngredientRecipe, Recipe, Tag
 from .permissions import IsOwnerOrIsStaffPermission
 from .serializers import (CartSerializer, FavoriteSerializer,

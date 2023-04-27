@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from .views import SubscribeViewList, UserDetail
 
-
 router_v1 = DefaultRouter()
 router_v1.register('', UserDetail, basename='users')
 

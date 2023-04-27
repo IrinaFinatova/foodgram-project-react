@@ -8,12 +8,12 @@ from rest_framework.response import Response
 
 from recipes.serializers import SubscribeReadSerializer, SubscribeSerializer
 
-from .models import CustomUser, Subscribe
+from .models import CustomUser as User, Subscribe
 from .serializers import CustomUserSerializer
 
 
 class UserDetail(UserViewSet):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
 
     @action(
         detail=True,
@@ -49,5 +49,5 @@ class SubscribeViewList(ListAPIView):
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
-        return CustomUser.objects.filter(
+        return User.objects.filter(
             subscrib__subscribed=self.request.user)

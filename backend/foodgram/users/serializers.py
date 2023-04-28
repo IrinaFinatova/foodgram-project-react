@@ -18,7 +18,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User

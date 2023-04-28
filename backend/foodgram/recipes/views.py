@@ -53,18 +53,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         """Добавление рецепта в корзину
-        для покупки ингридиентов"""
+        для покупки ингрeдиентов"""
 
         data = {'recipe': pk,
                 'user': request.user.id}
         if request.method == 'POST':
             serializer = CartSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer.data, status=status.HTTP_201_CREATED)
         Cart.objects.filter(**data).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -78,12 +76,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 'user': request.user.id}
         if request.method == 'POST':
             serializer = FavoriteSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer.data, status=status.HTTP_201_CREATED)
         Favorite.objects.filter(**data).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

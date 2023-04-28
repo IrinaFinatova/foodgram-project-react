@@ -59,8 +59,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 'user': request.user.id}
         if request.method == 'POST':
             serializer = CartSerializer(data=data)
-            if serializer.is_valid():
-                serializer.save(raise_exception=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save
                 return Response(
                     serializer.data, status=status.HTTP_201_CREATED)
             return Response(

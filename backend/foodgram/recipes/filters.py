@@ -13,8 +13,7 @@ class RecipeFilter(FilterSet):
         queryset=Tag.objects.all())
 
     is_favorited = NumberFilter(
-        method='get_is_favorited',
-        label='В избранном')
+        method='get_is_favorited')
 
     is_in_shopping_cart = NumberFilter(
         method='get_is_in_shopping_cart')
@@ -24,12 +23,12 @@ class RecipeFilter(FilterSet):
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
     def get_is_favorited(self, queryset, field_name, value):
-        if value:
+        if value and self.request.user.is_authenticated:
             return queryset.filter(favorite__user=self.request.user)
         return queryset
 
     def get_is_in_shopping_cart(self, queryset, field_name, value):
-        if value:
+        if value and self.request.user.is_authenticated:
             return queryset.filter(cart__user=self.request.user)
         return queryset
 

@@ -1,8 +1,9 @@
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from .models import CustomUser as User, Subscribe
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -17,7 +18,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             user=obj.id).exists() if request else False
 
 
-class CustomUserCreateSerializer(serializers.ModelSerializer):
+class CustomUserCreateSerializer(UserCreateSerializer):
 
     class Meta:
         model = User

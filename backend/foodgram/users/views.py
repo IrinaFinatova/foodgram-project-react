@@ -37,9 +37,10 @@ class UserDetail(UserViewSet):
         permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         users = User.objects.filter(
-            subscrib__subscribed=self.request.user)
-        serializer = SubscribeReadSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            subscrib__subscribed=request.user)
+        page = self.paginate_queryset(users)
+        serializer = SubscribeReadSerializer(page, many=True, context={'request': request})
+        return self.get_paginated_response(serializer.data)
 
     @action(
         methods=['GET'],

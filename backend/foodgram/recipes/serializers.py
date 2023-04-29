@@ -2,7 +2,8 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from users.models import CustomUser as User, Subscribe
+from users.models import CustomUser as User
+from users.models import Subscribe
 from users.serializers import CustomUserSerializer
 
 from .models import (PARAMETRS_OF_RECIPE, Cart, Favorite, Ingredient,
@@ -218,6 +219,7 @@ class CartSerializer(serializers.ModelSerializer):
 class SubscribeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для чтения подписок"""
 
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
 
@@ -226,7 +228,14 @@ class SubscribeReadSerializer(serializers.ModelSerializer):
 
         fields = ('email', 'id',
                   'username', 'first_name',
-                  'last_name', 'recipes', 'recipes_count')
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        return Subscribe.objects.filter(
+            subscribed=request.user, user=obj).exists()
 
     def get_recipes(self, author):
         request = self.context.get('request')

@@ -8,12 +8,14 @@ from rest_framework.response import Response
 
 from recipes.serializers import SubscribeReadSerializer, SubscribeSerializer
 
-from .models import CustomUser as User, Subscribe
+from .models import CustomUser as User
+from .models import Subscribe
 from .serializers import CustomUserSerializer
 
 
 class UserDetail(UserViewSet):
     queryset = User.objects.all()
+    pagination_class = PageNumberPagination
 
     @action(
         detail=True,
@@ -41,13 +43,14 @@ class UserDetail(UserViewSet):
         serializer = CustomUserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class SubscribeViewList(ListAPIView):
-    queryset = Subscribe.objects.all()
-    serializer_class = SubscribeReadSerializer
-    permission_classes = [IsAuthenticated]
-    pagination_class = PageNumberPagination
-
-    def get_queryset(self):
-        return User.objects.filter(
+    @action(
+        methods=['GET'],
+        detail=False,
+        permission_classes=[IsAuthenticated])
+    def subscriptions(self, request):
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        users = User.objects.filter(
             subscrib__subscribed=self.request.user)
+        serializer = SubscribeReadSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

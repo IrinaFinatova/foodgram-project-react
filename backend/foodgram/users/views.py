@@ -33,6 +33,15 @@ class UserDetail(UserViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
+        detail=False, methods=['GET'],
+        permission_classes=[IsAuthenticated])
+    def subscriptions(self, request):
+        users = User.objects.filter(
+            subscrib__subscribed=self.request.user)
+        serializer = SubscribeReadSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
         methods=['GET'],
         detail=False,
         permission_classes=[IsAuthenticated])
@@ -42,14 +51,4 @@ class UserDetail(UserViewSet):
         serializer = CustomUserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(
-        methods=['GET'],
-        detail=False,
-        permission_classes=[IsAuthenticated])
-    def subscriptions(self, request):
-        if request.user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        users = User.objects.filter(
-            subscrib__subscribed=self.request.user)
-        serializer = SubscribeReadSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+

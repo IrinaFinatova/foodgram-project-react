@@ -228,7 +228,6 @@ class SubscribeReadSerializer(serializers.ModelSerializer):
                   'username', 'first_name',
                   'last_name', 'recipes', 'recipes_count')
 
-
     def get_recipes(self, author):
         request = self.context.get('request')
         recipes = author.recipes.all()

@@ -39,7 +39,8 @@ class UserDetail(UserViewSet):
         users = User.objects.filter(
             subscrib__subscribed=request.user)
         page = self.paginate_queryset(users)
-        serializer = SubscribeReadSerializer(page, many=True, context={'request': request})
+        serializer = SubscribeReadSerializer(
+            page, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     @action(

@@ -1,6 +1,8 @@
 # praktikum_new_diplom
 
-![example workflow](https://github.com/IrinaFinatova/foodgram-project-react/docs/actions/workflows/main.yml/badge.svg)
+
+![example workflow](https://github.com/IrinaFinatova/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)
+
 
 Проект Foodgram создает вашу он-лайн кулинарную книгу.
 Вы можете создавать свои рецепты, обмениваться рецептами с другими участниками проекта.
@@ -25,7 +27,7 @@ Postgres
 
 docker-compose up -d --build
 
-###При первом запуске для функционирования проекта выполните команды:
+### При первом запуске для функционирования проекта выполните команды:
 
 docker-compose exec web python manage.py migrate
 
@@ -51,4 +53,4 @@ DB_HOST=db # название сервиса (контейнера)
 
 DB_PORT=5432 # порт для подключения к БД
 
-SECRET_KEY = 
+SECRET_KEY = xxxxxxxxxxxxxxxxxxxx
